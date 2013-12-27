@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="win32">
+      <UniqueIdentifier>{84a8ebd7-7cf0-47f6-b75e-d441df67da40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes">
+      <UniqueIdentifier>{bb6c862e-70e9-49d9-81b7-3829a6f50471}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sences">
+      <UniqueIdentifier>{a0e0fdd7-3a0d-4fd3-ae33-558095916090}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sprites">
+      <UniqueIdentifier>{acefb05d-7bc5-4921-95fa-a952820ab1ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{13016bc3-acbd-4ea8-b3b7-039ca3a4521f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\AppDelegate.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\SmartRes.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\SnakeGlobal.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Frog.cpp">
+      <Filter>Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Snake.cpp">
+      <Filter>Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\SnakeHead.cpp">
+      <Filter>Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\SnakeScene.cpp">
+      <Filter>Sences</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\CellSpriteI.cpp">
+      <Filter>Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\SnakeBody.cpp">
+      <Filter>Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h">
+      <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\AppDelegate.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SnakeGlobal.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SmartRes.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Frog.h">
+      <Filter>Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Snake.h">
+      <Filter>Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SnakeHead.h">
+      <Filter>Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SnakeScene.h">
+      <Filter>Sences</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\CellSpriteI.h">
+      <Filter>Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SnakeBody.h">
+      <Filter>Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
