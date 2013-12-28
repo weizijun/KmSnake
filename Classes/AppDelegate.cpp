@@ -4,6 +4,7 @@
 #include "SnakeScene.h"
 #include "SimpleAudioEngine.h"
 #include "SmartRes.h"
+#include "SnakeGlobal.h"
 
 using namespace CocosDenshion;
 
@@ -24,7 +25,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     CCDirector *pDirector = CCDirector::sharedDirector();
     pDirector->setOpenGLView(CCEGLView::sharedOpenGLView());
 
-	CSmartRes::sharedRes()->setVirtualScreenWidth(960);
+	CSmartRes::sharedRes()->setVirtualScreenWidth(SnakeGolbal::BACKGROUND_WIDTH);
 
     // turn on display FPS
     pDirector->setDisplayStats(false);

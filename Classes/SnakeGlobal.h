@@ -23,6 +23,8 @@ namespace SnakeGolbal
 
 	static const char *BACKGROUND_IMAGE = "background.png";
 	static const char *BACKGROUND_LINE_IMAGE = "background_line.png";
+	static const char *BACKGROUND_LINE_HEIGHT_IMAGE = "background_line_height.png";
+	static const char *BACKGROUND_LINE_WIDTH_IMAGE = "background_line_width.png";
 	static const char *SNAKE_BODY_IMAGE = "snake_tailpart.png";
 	static const char *SNAKE_HEAD_IMAGE = "snake_head.png";
 	static const char *FROG_IMAGE = "frog.png";
@@ -41,7 +43,7 @@ namespace SnakeGolbal
 	static const int BACKGROUND_WIDTH = 960;
 	static const int CELLS_ORIGIN_HEIGTH_BEGIN = 8;
 	static const int CELLS_ORIGIN_HEIGTH_END = 550;
-	static const int BACKGROUND_ORIGIN_HEIGTH = 534;
+	static const int BACKGROUND_ORIGIN_HEIGTH = 534;	
 
 	static const double LEAST_MOVE = 1;
 	static const double LEAST_TAN_DIRECTION = 0.1;

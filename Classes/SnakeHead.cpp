@@ -3,6 +3,7 @@
 #include "SnakeGlobal.h"
 
 CSnakeHead::CSnakeHead(int cellX,int cellY)
+		: CellSpriteI()
 {
 
 	m_CellX = cellX;
@@ -27,7 +28,6 @@ CSnakeHead::CSnakeHead(int cellX,int cellY)
 	CCSpriteFrame *frm = ((CCAnimationFrame*)(m_Animation->getFrames()->objectAtIndex(0)))->getSpriteFrame();
 
 	this->initWithSpriteFrame(frm);
-
 	this->SetCell(cellX,cellY);
 }
 

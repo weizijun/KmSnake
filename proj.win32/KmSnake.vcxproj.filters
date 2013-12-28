@@ -48,7 +48,7 @@
     <ClCompile Include="..\Classes\SnakeBody.cpp">
       <Filter>Sprites</Filter>
     </ClCompile>
-    <ClCompile Include="GameManager.cpp">
+    <ClCompile Include="..\Classes\GameManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,7 +83,7 @@
     <ClInclude Include="..\Classes\SnakeBody.h">
       <Filter>Sprites</Filter>
     </ClInclude>
-    <ClInclude Include="GameManager.h">
+    <ClInclude Include="..\Classes\GameManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>

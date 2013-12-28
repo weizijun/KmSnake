@@ -68,10 +68,7 @@ static Direction Opposite(const Direction direction)
 class CellSpriteI : public CCSprite
 {
 public:
-	CellSpriteI() : CCSprite()
-	{
-
-	}
+	CellSpriteI();
 
 	virtual const int GetCellX() const;
 	virtual const int GetCellY() const;

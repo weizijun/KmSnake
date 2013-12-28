@@ -4,7 +4,6 @@
 #include "CCScheduler.h"
 #include "SnakeBody.h"
 
-
 using namespace cocos2d;
 
 CCScene* CSnakeScene::scene()
@@ -31,9 +30,6 @@ bool CSnakeScene::init()
 	bool t_Ret = false;
 	do 
 	{
-		//初始化背景边框
-		CC_BREAK_IF(!_InitBackgroundCell());
-
 		//创建4层layer
 		for (int i = 0; i < SnakeGolbal::LAYER_COUNT; ++i)
 		{
@@ -42,6 +38,9 @@ bool CSnakeScene::init()
 
 		//初始化背景层
 		CC_BREAK_IF(!_InitBackgroundLayer());
+
+		//初始化背景边框
+		CC_BREAK_IF(!_InitBackgroundCell());
 
 		//初始化UI层
 		CC_BREAK_IF(!_InitUILayer());
@@ -65,18 +64,67 @@ bool CSnakeScene::_InitBackgroundCell()
 	CCSize size = CCDirector::sharedDirector()->getWinSize();
 
 	//int t_WidthCells = static_cast<int>(SmartRes::sharedRes()->getRight() / SnakeGolbal::CELL_WIDTH);
-	SnakeGolbal::g_CellsWidthBegin = SnakeGolbal::CELLS_WIDTH_BEGIN;
-	SnakeGolbal::g_CellsWidthEnd = SnakeGolbal::CELLS_WIDTH_END;
+	
+	SnakeGolbal::g_CellsWidthEnd = static_cast<int>(CSmartRes::sharedRes()->getRight() - 10);
+	SnakeGolbal::g_CellsWidthBegin = (SnakeGolbal::g_CellsWidthEnd - 50) % SnakeGolbal::CELL_WIDTH + 50;	
 
-	int t_HeightCells = static_cast<int>(CSmartRes::sharedRes()->getTop() / SnakeGolbal::CELL_WIDTH);
+	SnakeGolbal::g_CellsHeightEnd = static_cast<int>(CSmartRes::sharedRes()->getTop() - 10);
+	SnakeGolbal::g_CellsHeightBegin = (SnakeGolbal::g_CellsHeightEnd - 10) % SnakeGolbal::CELL_HEIGHT + 10;
 
-	float t_HeightScale =  CSmartRes::sharedRes()->getTop() / SnakeGolbal::CELLS_ORIGIN_HEIGTH_END;
-	SnakeGolbal::g_CellsHeightBegin = static_cast<int>(t_HeightScale * SnakeGolbal::CELLS_ORIGIN_HEIGTH_BEGIN);
-	SnakeGolbal::g_CellsHeightEnd = static_cast<int>(SnakeGolbal::BACKGROUND_ORIGIN_HEIGTH + SnakeGolbal::g_CellsHeightBegin);
-	//SnakeGolbal::g_CellsHeightEnd = SnakeGolbal::g_CellsHeightEnd - SnakeGolbal::g_CellsHeightEnd % SnakeGolbal::g_CellsHeightBegin;
-
-	SnakeGolbal::g_CellsHorizon = SnakeGolbal::BACKGROUND_WIDTH / SnakeGolbal::CELL_WIDTH - 1;
+	SnakeGolbal::g_CellsHorizon = (SnakeGolbal::g_CellsWidthEnd - SnakeGolbal::g_CellsHeightBegin) / SnakeGolbal::CELL_WIDTH;
 	SnakeGolbal::g_CellsVertical = (SnakeGolbal::g_CellsHeightEnd - SnakeGolbal::g_CellsHeightBegin) / SnakeGolbal::CELL_HEIGHT;
+
+	CCLayer* layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_BACKGROUND);
+
+	CCSprite* t_BackgroupLineWidthBegin = CCSprite::create(SnakeGolbal::BACKGROUND_LINE_WIDTH_IMAGE);
+	if(!t_BackgroupLineWidthBegin)
+	{
+		return false;
+	}	
+	
+	t_BackgroupLineWidthBegin->setAnchorPoint(ccp(0,1));
+	float scaleX = (SnakeGolbal::g_CellsWidthEnd - SnakeGolbal::g_CellsWidthBegin) / 896;
+	t_BackgroupLineWidthBegin->setScaleX(scaleX);
+	t_BackgroupLineWidthBegin->setPosition(ccp(SnakeGolbal::g_CellsWidthBegin,SnakeGolbal::g_CellsHeightBegin));
+	
+	layer->addChild(t_BackgroupLineWidthBegin);
+
+	CCSprite* t_BackgroupLineWidthEnd = CCSprite::create(SnakeGolbal::BACKGROUND_LINE_WIDTH_IMAGE);
+	if(!t_BackgroupLineWidthEnd)
+	{
+		return false;
+	}	
+
+	t_BackgroupLineWidthEnd->setAnchorPoint(ccp(0,0));
+	t_BackgroupLineWidthEnd->setScaleX(scaleX);
+	t_BackgroupLineWidthEnd->setPosition(ccp(SnakeGolbal::g_CellsWidthBegin,SnakeGolbal::g_CellsHeightEnd));
+
+	layer->addChild(t_BackgroupLineWidthEnd);
+
+	CCSprite* t_BackgroupLineHeightBegin = CCSprite::create(SnakeGolbal::BACKGROUND_LINE_HEIGHT_IMAGE);
+	if(!t_BackgroupLineHeightBegin)
+	{
+		return false;
+	}	
+
+	float scaleY = (SnakeGolbal::g_CellsHeightEnd - SnakeGolbal::g_CellsHeightBegin) / 512.00;
+	t_BackgroupLineHeightBegin->setAnchorPoint(ccp(1,0));
+	t_BackgroupLineHeightBegin->setScaleY(scaleY);
+	t_BackgroupLineHeightBegin->setPosition(ccp(SnakeGolbal::g_CellsWidthBegin,SnakeGolbal::g_CellsHeightBegin));
+	layer->addChild(t_BackgroupLineHeightBegin);
+
+	CCSprite* t_BackgroupLineHeightEnd = CCSprite::create(SnakeGolbal::BACKGROUND_LINE_HEIGHT_IMAGE);
+	if(!t_BackgroupLineHeightEnd)
+	{
+		return false;
+	}	
+
+	t_BackgroupLineHeightEnd->setAnchorPoint(ccp(0,0));
+	t_BackgroupLineHeightEnd->setScaleY(scaleY);
+	t_BackgroupLineHeightEnd->setPosition(ccp(SnakeGolbal::g_CellsWidthEnd,SnakeGolbal::g_CellsHeightBegin));
+
+	layer->addChild(t_BackgroupLineHeightEnd);
+
 
 	return true;
 }
@@ -95,15 +143,15 @@ bool CSnakeScene::_InitBackgroundLayer()
 	pSprite->setPosition(ccp(size.width/2,size.height/2));
 	layer->addChild(pSprite);
 
-	CCSprite* t_BackgroupLineSprite = CCSprite::create(SnakeGolbal::BACKGROUND_LINE_IMAGE);
-	if(!t_BackgroupLineSprite)
-	{
-		return false;
-	}
-	float scalY=size.height/t_BackgroupLineSprite->getContentSize().height;//设置y轴方向的缩放系数
-	t_BackgroupLineSprite->setScaleY(scalY);
-	t_BackgroupLineSprite->setPosition(ccp(size.width/2,size.height/2));
-	layer->addChild(t_BackgroupLineSprite);
+	//CCSprite* t_BackgroupLineSprite = CCSprite::create(SnakeGolbal::BACKGROUND_LINE_IMAGE);
+	//if(!t_BackgroupLineSprite)
+	//{
+	//	return false;
+	//}
+	//float scalY=size.height/t_BackgroupLineSprite->getContentSize().height;//设置y轴方向的缩放系数
+	//t_BackgroupLineSprite->setScaleY(scalY);
+	//t_BackgroupLineSprite->setPosition(ccp(size.width/2,size.height/2));
+	//layer->addChild(t_BackgroupLineSprite);
 
 	return true;
 }
@@ -187,7 +235,7 @@ bool CSnakeScene::_InitFrog()
 //初始化蛇
 bool CSnakeScene::_InitSnake()
 {
-	m_Snake = new CSnake(0,SnakeGolbal::g_CellsVertical/2);
+	m_Snake = new CSnake(0,0);//SnakeGolbal::g_CellsVertical/2);
 	m_Snake->autorelease();		
 	m_Snake->GetHead()->Animate(0.5f);
 	m_Snake->Grow();
@@ -274,7 +322,8 @@ void CSnakeScene::_SetFrogCell()
 void CSnakeScene::_GameCircle(float dt)
 {
 	//CCLOG("circle:%f,time:%d",dt,time(NULL));
-	//CCLOG("x:%d,y:%d",t_SnakeHead->GetCellX(),t_SnakeHead->GetCellY());
+	CSnakeHead * t_SnakeHead = m_Snake->GetHead();
+	CCLOG("x:%d,y:%d",t_SnakeHead->GetCellX(),t_SnakeHead->GetCellY());
 	
 	if (m_IsGameRunning)
 	{
@@ -306,7 +355,7 @@ bool CSnakeScene::_CheckMoveToward()
 	switch(t_Direction)
 	{
 	case UP:
-		if (t_SnakeHead->GetCellY() >= SnakeGolbal::g_CellsVertical)
+		if (t_SnakeHead->GetCellY() >= SnakeGolbal::g_CellsVertical-1)
 		{
 			t_GameOverFlag = true;
 		}
@@ -324,7 +373,7 @@ bool CSnakeScene::_CheckMoveToward()
 		}
 		break;
 	case RIGHT:
-		if (t_SnakeHead->GetCellX() >= SnakeGolbal::g_CellsHorizon)			
+		if (t_SnakeHead->GetCellX() >= SnakeGolbal::g_CellsHorizon-2)			
 		{
 			t_GameOverFlag = true;
 		}

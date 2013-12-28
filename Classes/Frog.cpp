@@ -3,6 +3,7 @@
 #include "SnakeGlobal.h"
 
 CFrog::CFrog(int cellX,int cellY)
+	: CellSpriteI()
 {
 	m_CellX = cellX;
 	m_CellY = cellY;
