@@ -63,6 +63,7 @@ private:
 
 	//游戏循环函数
 	void _GameCircle(float dt);
+	void _GameCircle2(float dt);
 
 	//点击重启回调函数
 	void _GameResetCallback(CCObject* pSender);

@@ -399,6 +399,34 @@ void CSnakeScene::_GameCircle(float dt)
 	}
 }
 
+void CSnakeScene::_GameCircle2(float dt)
+{
+	//CCLOG("circle:%f,time:%d",dt,time(NULL));
+	CSnakeHead * t_SnakeHead = m_Snake->GetHead();
+	CCLOG("x:%d,y:%d",t_SnakeHead->GetCellX(),t_SnakeHead->GetCellY());
+
+	if (m_IsGameRunning)
+	{
+		//判断前移是不是会碰壁
+		bool t_GameOverFlag = _CheckMoveToward();
+		if (t_GameOverFlag == true)
+		{			
+			_GameOver();
+			return;
+		}
+
+		//往前移动一个
+		if (!m_Snake->Move())
+		{
+			_GameOver();
+			return;
+		}
+
+		//吃东西
+		_HandleEat();
+	}
+}
+
 bool CSnakeScene::_CheckMoveToward()
 {
 	const CSnakeHead *t_SnakeHead = m_Snake->GetHead();
@@ -887,8 +915,8 @@ void CSnakeScene::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
                 }
                 else if ((t_XLen > 0 && t_Direction == UP) || (t_XLen < 0 && t_Direction == DOWN))
                 {
-                    double t_Rand = 0.1;
-                    _GameCircle(t_Rand);
+                    scheduleOnce(schedule_selector(CSnakeScene::_GameCircle2),0.1);					
+					scheduleOnce(schedule_selector(CSnakeScene::_GameCircle2),0.2);					
                 }
                 break;
             case LEFT:
@@ -916,8 +944,8 @@ void CSnakeScene::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
                 }
                 else if ((t_XLen > 0 && t_Direction == RIGHT) || (t_XLen < 0 && t_Direction == LEFT))
                 {
-                    double t_Rand = 0.1;
-                    _GameCircle(t_Rand);		
+					scheduleOnce(schedule_selector(CSnakeScene::_GameCircle2),0.1);					
+					scheduleOnce(schedule_selector(CSnakeScene::_GameCircle2),0.2);
                 }
         }
     }
