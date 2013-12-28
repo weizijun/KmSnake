@@ -404,30 +404,77 @@ bool CSnakeScene::_CheckMoveToward()
 	const CSnakeHead *t_SnakeHead = m_Snake->GetHead();
 	const Direction t_Direction = m_Snake->GetDirection();
 	bool t_GameOverFlag = false;
+
+	CCArray *t_TailArr = m_Snake->GetTailArr();	
+	CSnakeBody *t_TailEnd;
 	switch(t_Direction)
 	{
 	case UP:
 		if (t_SnakeHead->GetCellY() >= SnakeGolbal::g_CellsVertical-1)
 		{
 			t_GameOverFlag = true;
+		} else {					
+			for(int it = t_TailArr->count() - 1; it >= 0; --it)
+			{
+				t_TailEnd = (CSnakeBody *)(t_TailArr->objectAtIndex(it));
+				if (t_TailEnd->GetCellX() == t_SnakeHead->GetCellX() && t_TailEnd->GetCellY() == t_SnakeHead->GetCellY()+1)
+				{
+					t_GameOverFlag = true;
+					//delete t_TailEnd;
+					break;
+				}
+			}
 		}
 		break;
 	case DOWN:
 		if (t_SnakeHead->GetCellY() <= 0)
 		{
 			t_GameOverFlag = true;
+		} else {					
+			for(int it = t_TailArr->count() - 1; it >= 0; --it)
+			{
+				t_TailEnd = (CSnakeBody *)(t_TailArr->objectAtIndex(it));
+				if (t_TailEnd->GetCellX() == t_SnakeHead->GetCellX() && t_TailEnd->GetCellY() == t_SnakeHead->GetCellY()-1)
+				{
+					t_GameOverFlag = true;
+					//delete t_TailEnd;
+					break;
+				}
+			}
 		}
 		break;
 	case LEFT:
 		if (t_SnakeHead->GetCellX() <= 0)
 		{
 			t_GameOverFlag = true;
+		} else {					
+			for(int it = t_TailArr->count() - 1; it >= 0; --it)
+			{
+				t_TailEnd = (CSnakeBody *)(t_TailArr->objectAtIndex(it));
+				if (t_TailEnd->GetCellX() == t_SnakeHead->GetCellX()-1 && t_TailEnd->GetCellY() == t_SnakeHead->GetCellY())
+				{
+					t_GameOverFlag = true;
+					//delete t_TailEnd;
+					break;
+				}
+			}
 		}
 		break;
 	case RIGHT:
 		if (t_SnakeHead->GetCellX() >= SnakeGolbal::g_CellsHorizon-1)			
 		{
 			t_GameOverFlag = true;
+		} else {					
+			for(int it = t_TailArr->count() - 1; it >= 0; --it)
+			{
+				t_TailEnd = (CSnakeBody *)(t_TailArr->objectAtIndex(it));
+				if (t_TailEnd->GetCellX() == t_SnakeHead->GetCellX() + 1 && t_TailEnd->GetCellY() == t_SnakeHead->GetCellY())
+				{
+					t_GameOverFlag = true;
+					//delete t_TailEnd;
+					break;
+				}
+			}
 		}
 		break;
 	}

@@ -63,18 +63,10 @@ bool CSnake::Move()
 			t_TailEnd->SetCell(*m_SnakeHead);
 
 			m_ArrTail.insertObject(t_TailEnd,0);
-		}
+		}		
 	}
 
 	m_SnakeHead->SetCell(GetNextX(),GetNextY());
-
-	for (int i = m_ArrTail.count() - 1; i >= 0; --i)
-	{
-		if (m_SnakeHead->IsInSameCell(*(CSnakeBody*)m_ArrTail.objectAtIndex(i)))
-		{
-			return false;
-		}
-	}
 
 	return true;
 }
