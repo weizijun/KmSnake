@@ -51,6 +51,10 @@ bool CSnakeScene::init()
 		//初始化蛇
 		CC_BREAK_IF(!_InitSnake());
 
+		//CC_BREAK_IF(!_InitDiamond());
+
+		//CC_BREAK_IF(!_InitSuperDiamond());
+
 		//初始化游戏
 		CC_BREAK_IF(!_InitGame());
 
@@ -83,7 +87,7 @@ bool CSnakeScene::_InitBackgroundCell()
 	}	
 	
 	t_BackgroupLineWidthBegin->setAnchorPoint(ccp(0,1));
-	float scaleX = (SnakeGolbal::g_CellsWidthEnd - SnakeGolbal::g_CellsWidthBegin) / 896;
+	float scaleX = (SnakeGolbal::g_CellsWidthEnd - SnakeGolbal::g_CellsWidthBegin) / t_BackgroupLineWidthBegin->getContentSize().width;
 	t_BackgroupLineWidthBegin->setScaleX(scaleX);
 	t_BackgroupLineWidthBegin->setPosition(ccp(SnakeGolbal::g_CellsWidthBegin,SnakeGolbal::g_CellsHeightBegin));
 	
@@ -107,7 +111,7 @@ bool CSnakeScene::_InitBackgroundCell()
 		return false;
 	}	
 
-	float scaleY = (SnakeGolbal::g_CellsHeightEnd - SnakeGolbal::g_CellsHeightBegin) / 512.00;
+	float scaleY = (SnakeGolbal::g_CellsHeightEnd - SnakeGolbal::g_CellsHeightBegin) / t_BackgroupLineHeightBegin->getContentSize().height;
 	t_BackgroupLineHeightBegin->setAnchorPoint(ccp(1,0));
 	t_BackgroupLineHeightBegin->setScaleY(scaleY);
 	t_BackgroupLineHeightBegin->setPosition(ccp(SnakeGolbal::g_CellsWidthBegin,SnakeGolbal::g_CellsHeightBegin));
@@ -235,7 +239,7 @@ bool CSnakeScene::_InitFrog()
 //初始化蛇
 bool CSnakeScene::_InitSnake()
 {
-	m_Snake = new CSnake(0,0);//SnakeGolbal::g_CellsVertical/2);
+	m_Snake = new CSnake(0,SnakeGolbal::g_CellsVertical/2);
 	m_Snake->autorelease();		
 	m_Snake->GetHead()->Animate(0.5f);
 	m_Snake->Grow();
@@ -244,6 +248,22 @@ bool CSnakeScene::_InitSnake()
 
 	return true;
 }
+
+//bool CSnakeScene::_InitDiamond()
+//{
+//	m_Diamond = new CDiamond(0,0);
+//	//m_Diamond->autorelease();
+//	return true;
+//}
+//
+//bool CSnakeScene::_InitSuperDiamond()
+//{
+//	m_SuperDiamond = new CSuperDiamond(0,0);
+//	//m_SuperDiamond->autorelease();
+//	m_SuperDiamond->Animate(0.5f);
+//
+//	return true;
+//}
 
 bool CSnakeScene::_InitGame()
 {
@@ -258,6 +278,7 @@ bool CSnakeScene::_InitGame()
 
 	//摆放青蛙位置
 	_SetFrogCell();
+	m_EatFrogNum = 0;
 
 	//蛇出洞
 	m_Snake->Grow();
@@ -318,6 +339,70 @@ void CSnakeScene::_SetFrogCell()
 
 	m_Frog->SetCell(t_RandCellX,t_RandCellY);
 }
+
+void CSnakeScene::_SetDiamondCell(DiamondI *p_Diamond)
+{
+	//获得所有非蛇所在位置的空格，放入容器
+	std::vector<CCPoint> t_CellPointVec;
+	for (int i = 1; i<SnakeGolbal::g_CellsHorizon-1; ++i)
+	{
+		for (int j = 1; j<SnakeGolbal::g_CellsVertical-1; ++j)
+		{
+			if (i == m_Snake->GetHead()->GetCellX() && j == m_Snake->GetHead()->GetCellY())
+			{
+				continue;
+			}
+
+			CCArray *t_TailArr = m_Snake->GetTailArr();
+			bool t_TailFlag = false;
+			for(int it = t_TailArr->count() - 1; it >= 0; --it)
+			{
+				CSnakeBody *t_TailEnd = (CSnakeBody *)(t_TailArr->objectAtIndex(it));
+				if (t_TailEnd->GetCellX() == i && t_TailEnd->GetCellY() == j)
+				{
+					t_TailFlag = true;
+					//delete t_TailEnd;
+					break;
+				}
+				else
+				{
+					//delete t_TailEnd;
+				}
+			}
+
+			if (t_TailFlag == true)
+			{
+				continue;
+			}
+
+			if (i == m_Frog->GetCellX() && j == m_Frog->GetCellY())
+			{
+				continue;
+			}
+
+			t_CellPointVec.push_back(ccp(i,j));
+		}
+	}
+
+	//从容器中随机取出一个格子
+	int t_RandCell = CCRANDOM_0_1() * (t_CellPointVec.size()-1);
+	int t_RandCellX = t_CellPointVec[t_RandCell].x;
+	int t_RandCellY = t_CellPointVec[t_RandCell].y;
+
+	p_Diamond->SetCell(t_RandCellX,t_RandCellY);
+}
+
+//void CSnakeScene::_SetDiamondCell()
+//{
+//	CCPoint t_CellPoint = _SetDiamondCellBase();
+//	m_Diamond->SetCell(t_CellPoint.x,t_CellPoint.y);
+//}
+//
+//void CSnakeScene::_SetSuperDiamondCell()
+//{
+//	CCPoint t_CellPoint = _SetDiamondCellBase();
+//	m_SuperDiamond->SetCell(t_CellPoint.x,t_CellPoint.y);
+//}
 
 void CSnakeScene::_GameCircle(float dt)
 {
@@ -529,9 +614,11 @@ void CSnakeScene::_HandleEat()
 	//吃青蛙
 	bool t_IsEatFrog = _HandleEatFrog(t_SnakeHead);
 
-
 	if (true == t_IsEatFrog)
 	{
+		//蛇长大一节
+		m_Snake->Grow();
+
 		int t_TailLength = m_Snake->GetTailLength();
 		if (t_TailLength % 10 == 0)
 		{
@@ -541,6 +628,19 @@ void CSnakeScene::_HandleEat()
 				unschedule(schedule_selector(CSnakeScene::_GameCircle));
 				schedule(schedule_selector(CSnakeScene::_GameCircle),m_SnakeFlame);
 			}			
+		}
+
+		//每吃到4个青蛙，钻石出现
+		if (m_EatFrogNum != 0 && m_EatFrogNum % 2 == 0)
+		{
+			DiamondI * t_Diamond = new CNormalDiamond(0,0);
+
+			CCLayer* layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_FOOD);
+			layer->addChild(t_Diamond);
+			_SetDiamondCell(t_Diamond);
+
+			m_DiamondVec.push_back(t_Diamond);
+			t_Diamond->SetDesappear(layer,2.0);
 		}
 	}
 }
@@ -562,8 +662,8 @@ bool CSnakeScene::_HandleEatFrog(const CSnakeHead *p_SnakeHead)
 			m_HighestScoreText->setString(highest_score);
 		}
 
-		//蛇长大一节
-		m_Snake->Grow();	
+		//吃到青蛙的数量加1
+		m_EatFrogNum++;	
 
 		//青蛙位置随机摆放
 		_SetFrogCell();
@@ -711,4 +811,18 @@ void CSnakeScene::_PlayGameOverSound()
 void CSnakeScene::_PlayBackgroundSound()
 {
 
+}
+
+bool CSnakeScene::_EraseDiamondVec(DiamondI * p_Diamond)
+{
+	for (std::vector<DiamondI *>::iterator it = m_DiamondVec.begin(); it != m_DiamondVec.end(); ++it)
+	{
+		if ((*it)->GetCellX() == p_Diamond->GetCellX() && (*it)->GetCellY() == p_Diamond->GetCellY())
+		{
+			m_DiamondVec.erase(it);
+			return true;
+		}
+	}
+
+	return false;
 }

@@ -5,6 +5,8 @@
 #include "SimpleAudioEngine.h"
 #include "Snake.h"
 #include "Frog.h"
+#include "NormalDiamond.h"
+#include "SuperDiamond.h"
 
 using namespace cocos2d;
 
@@ -22,6 +24,8 @@ public:
 	void ccTouchEnded(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent);
 	void ccTouchCancelled(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent);
 	void registerWithTouchDispatcher();
+
+	bool _EraseDiamondVec(DiamondI * p_Diamond);
 private:
 	//初始化背景边框
 	bool _InitBackgroundCell();
@@ -37,6 +41,10 @@ private:
 
 	//初始化蛇
 	bool _InitSnake();
+
+	//bool _InitDiamond();
+
+	//bool _InitSuperDiamond();
 
 	//初始化游戏
 	bool _InitGame();
@@ -62,6 +70,8 @@ private:
 	//设置青蛙的位置
 	void _SetFrogCell();
 
+	void _SetDiamondCell(DiamondI *p_Diamond);
+
 	//结束游戏
 	void _GameOver();
 
@@ -81,6 +91,9 @@ private:
 	//判断前移是不是会碰壁
 	bool _CheckMoveToward();
 
+	//8秒后宝石自动消失
+	void _DiamondDisappear(float tt);
+
 private:
 	//int m_CellsHorizon;
 	//int m_CellsVertical;
@@ -92,6 +105,7 @@ private:
 
 	int m_nScore;
 	int m_HighestScore;
+	int m_EatFrogNum;
 	bool m_IsGameRunning;
 	CCSet *m_PauseAllTargets;
 
@@ -106,6 +120,7 @@ private:
 	CSnake *m_Snake;
 	double m_SnakeFlame;
 	CFrog *m_Frog;
+	std::vector<DiamondI *> m_DiamondVec;
 };
 
 #endif

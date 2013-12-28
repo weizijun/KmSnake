@@ -129,27 +129,33 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\CellSpriteI.cpp" />
+    <ClCompile Include="..\Classes\Diamond.cpp" />
     <ClCompile Include="..\Classes\Frog.cpp" />
     <ClCompile Include="..\Classes\GameManager.cpp" />
+    <ClCompile Include="..\Classes\NormalDiamond.cpp" />
     <ClCompile Include="..\Classes\SmartRes.cpp" />
     <ClCompile Include="..\Classes\Snake.cpp" />
     <ClCompile Include="..\Classes\SnakeBody.cpp" />
     <ClCompile Include="..\Classes\SnakeGlobal.cpp" />
     <ClCompile Include="..\Classes\SnakeHead.cpp" />
     <ClCompile Include="..\Classes\SnakeScene.cpp" />
+    <ClCompile Include="..\Classes\SuperDiamond.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\CellSpriteI.h" />
+    <ClInclude Include="..\Classes\Diamond.h" />
     <ClInclude Include="..\Classes\Frog.h" />
     <ClInclude Include="..\Classes\GameManager.h" />
+    <ClInclude Include="..\Classes\NormalDiamond.h" />
     <ClInclude Include="..\Classes\SmartRes.h" />
     <ClInclude Include="..\Classes\Snake.h" />
     <ClInclude Include="..\Classes\SnakeBody.h" />
     <ClInclude Include="..\Classes\SnakeGlobal.h" />
     <ClInclude Include="..\Classes\SnakeHead.h" />
     <ClInclude Include="..\Classes\SnakeScene.h" />
+    <ClInclude Include="..\Classes\SuperDiamond.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>

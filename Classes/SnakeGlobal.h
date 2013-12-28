@@ -25,9 +25,12 @@ namespace SnakeGolbal
 	static const char *BACKGROUND_LINE_IMAGE = "background_line.png";
 	static const char *BACKGROUND_LINE_HEIGHT_IMAGE = "background_line_height.png";
 	static const char *BACKGROUND_LINE_WIDTH_IMAGE = "background_line_width.png";
+	
 	static const char *SNAKE_BODY_IMAGE = "snake_tailpart.png";
 	static const char *SNAKE_HEAD_IMAGE = "snake_head.png";
 	static const char *FROG_IMAGE = "frog.png";
+	static const char *DIAMOND_IMAGE = "Diamond.png";
+	static const char *SUPER_DIAMOND_IMAGE = "Super_Diamond.png";
 	static const char *RESET_IMAGE = "redo-round.png";
 	static const char *PAUSE_ITEM_IMAGE = "pause_item.png";
 	static const char *PAUSE_MENU_IMAGE = "pause_menu.png";
@@ -46,7 +49,7 @@ namespace SnakeGolbal
 	static const int BACKGROUND_ORIGIN_HEIGTH = 534;	
 
 	static const double LEAST_MOVE = 1;
-	static const double LEAST_TAN_DIRECTION = 0.1;
+	static const double LEAST_TAN_DIRECTION = 0.2;
 
 	extern int g_CellsHorizon;
 	extern int g_CellsVertical;
@@ -54,6 +57,8 @@ namespace SnakeGolbal
 	extern int g_CellsWidthEnd;
 	extern int g_CellsHeightBegin;
 	extern int g_CellsHeightEnd;
+
+	static const int DIAMOND_TIMES = 4;
 }
 
 #endif
