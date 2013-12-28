@@ -59,7 +59,7 @@ namespace SnakeGolbal
 	extern int g_CellsHeightEnd;
 
 	static const int DIAMOND_TIMES = 4;
-	static const int FIRST_DIAMOND_RATE = 1;
+	static const int FIRST_DIAMOND_RATE = 0.4;
 	static const int SECOND_DIAMOND_RATE = 0.1;
 }
 

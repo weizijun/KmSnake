@@ -75,7 +75,7 @@ bool CSnakeScene::_InitBackgroundCell()
 	SnakeGolbal::g_CellsHeightEnd = static_cast<int>(CSmartRes::sharedRes()->getTop() - 10);
 	SnakeGolbal::g_CellsHeightBegin = (SnakeGolbal::g_CellsHeightEnd - 10) % SnakeGolbal::CELL_HEIGHT + 10;
 
-	SnakeGolbal::g_CellsHorizon = (SnakeGolbal::g_CellsWidthEnd - SnakeGolbal::g_CellsHeightBegin) / SnakeGolbal::CELL_WIDTH;
+	SnakeGolbal::g_CellsHorizon = (SnakeGolbal::g_CellsWidthEnd - SnakeGolbal::g_CellsWidthBegin) / SnakeGolbal::CELL_WIDTH;
 	SnakeGolbal::g_CellsVertical = (SnakeGolbal::g_CellsHeightEnd - SnakeGolbal::g_CellsHeightBegin) / SnakeGolbal::CELL_HEIGHT;
 
 	CCLayer* layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_BACKGROUND);
@@ -425,7 +425,7 @@ bool CSnakeScene::_CheckMoveToward()
 		}
 		break;
 	case RIGHT:
-		if (t_SnakeHead->GetCellX() >= SnakeGolbal::g_CellsHorizon-2)			
+		if (t_SnakeHead->GetCellX() >= SnakeGolbal::g_CellsHorizon-1)			
 		{
 			t_GameOverFlag = true;
 		}
