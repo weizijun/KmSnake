@@ -17,6 +17,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 				   ../../Classes/Snake.cpp \
 				   ../../Classes/SnakeBody.cpp \
 				   ../../Classes/SnakeGlobal.cpp \
+				   ../../Classes/SuperDiamond.cpp \
 				   ../../Classes/SnakeHead.cpp \
 				   ../../Classes/SnakeScene.cpp
 				   
