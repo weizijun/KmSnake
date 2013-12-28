@@ -10,6 +10,13 @@
 
 using namespace cocos2d;
 
+enum Snake_Food
+{
+	Food_Frog = 1,
+	Food_Normal_Diamond = 2,
+	food_Super_Diamon = 3,
+};
+
 class CSnakeScene : public cocos2d::CCLayer
 {
 public:
@@ -42,9 +49,9 @@ private:
 	//初始化蛇
 	bool _InitSnake();
 
-	//bool _InitDiamond();
+	bool _InitDiamond();
 
-	//bool _InitSuperDiamond();
+	bool _InitSuperDiamond();
 
 	//初始化游戏
 	bool _InitGame();
@@ -68,9 +75,12 @@ private:
 
 private:
 	//设置青蛙的位置
-	void _SetFrogCell();
+	CCPoint _SetRandCell();
 
-	void _SetDiamondCell(DiamondI *p_Diamond);
+	void _SetFrogCell();	
+	void _SetNormalDiamondCell();
+	void _SetSuperDiamondCell();
+
 
 	//结束游戏
 	void _GameOver();
@@ -84,6 +94,8 @@ private:
 	//处理蛇吃到物品
 	void _HandleEat();
 	bool _HandleEatFrog(const CSnakeHead *);
+	bool _HandleEatNormalDiamond(const CSnakeHead *);
+	bool _HandleEatSuperDiamond(const CSnakeHead *);
 
 	//检查是否为双击
 	void _CheckDoubleCilck(float tt);
@@ -106,6 +118,7 @@ private:
 	int m_nScore;
 	int m_HighestScore;
 	int m_EatFrogNum;
+	int m_SuperDiamondTimes;
 	bool m_IsGameRunning;
 	CCSet *m_PauseAllTargets;
 
@@ -120,6 +133,9 @@ private:
 	CSnake *m_Snake;
 	double m_SnakeFlame;
 	CFrog *m_Frog;
+	DiamondI *m_NormalDiamond;
+	DiamondI *m_SuperDiamond;
+	int m_FoodType;
 	std::vector<DiamondI *> m_DiamondVec;
 };
 

@@ -51,9 +51,9 @@ bool CSnakeScene::init()
 		//初始化蛇
 		CC_BREAK_IF(!_InitSnake());
 
-		//CC_BREAK_IF(!_InitDiamond());
+		CC_BREAK_IF(!_InitDiamond());
 
-		//CC_BREAK_IF(!_InitSuperDiamond());
+		CC_BREAK_IF(!_InitSuperDiamond());
 
 		//初始化游戏
 		CC_BREAK_IF(!_InitGame());
@@ -70,7 +70,7 @@ bool CSnakeScene::_InitBackgroundCell()
 	//int t_WidthCells = static_cast<int>(SmartRes::sharedRes()->getRight() / SnakeGolbal::CELL_WIDTH);
 	
 	SnakeGolbal::g_CellsWidthEnd = static_cast<int>(CSmartRes::sharedRes()->getRight() - 10);
-	SnakeGolbal::g_CellsWidthBegin = (SnakeGolbal::g_CellsWidthEnd - 50) % SnakeGolbal::CELL_WIDTH + 50;	
+	SnakeGolbal::g_CellsWidthBegin = (SnakeGolbal::g_CellsWidthEnd - 100) % SnakeGolbal::CELL_WIDTH + 100;	
 
 	SnakeGolbal::g_CellsHeightEnd = static_cast<int>(CSmartRes::sharedRes()->getTop() - 10);
 	SnakeGolbal::g_CellsHeightBegin = (SnakeGolbal::g_CellsHeightEnd - 10) % SnakeGolbal::CELL_HEIGHT + 10;
@@ -227,8 +227,7 @@ bool CSnakeScene::_InitUILayer()
 //初始化青蛙
 bool CSnakeScene::_InitFrog()
 {
-	m_Frog = new CFrog(0,0);
-	m_Frog->autorelease();
+	m_Frog = new CFrog(0,0);	
 	m_Frog->Animate(0.5f);
 	CCLayer* layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_FOOD);
 	layer->addChild(m_Frog);
@@ -249,21 +248,21 @@ bool CSnakeScene::_InitSnake()
 	return true;
 }
 
-//bool CSnakeScene::_InitDiamond()
-//{
-//	m_Diamond = new CDiamond(0,0);
-//	//m_Diamond->autorelease();
-//	return true;
-//}
-//
-//bool CSnakeScene::_InitSuperDiamond()
-//{
-//	m_SuperDiamond = new CSuperDiamond(0,0);
-//	//m_SuperDiamond->autorelease();
-//	m_SuperDiamond->Animate(0.5f);
-//
-//	return true;
-//}
+bool CSnakeScene::_InitDiamond()
+{
+	m_NormalDiamond = new CNormalDiamond(0,0);
+	//m_Diamond->autorelease();
+	return true;
+}
+
+bool CSnakeScene::_InitSuperDiamond()
+{
+	m_SuperDiamond = new CSuperDiamond(0,0);
+	//m_SuperDiamond->autorelease();
+	m_SuperDiamond->Animate(0.5f);
+
+	return true;
+}
 
 bool CSnakeScene::_InitGame()
 {
@@ -279,6 +278,9 @@ bool CSnakeScene::_InitGame()
 	//摆放青蛙位置
 	_SetFrogCell();
 	m_EatFrogNum = 0;
+	m_SuperDiamondTimes = 0;
+
+	m_FoodType = 1;
 
 	//蛇出洞
 	m_Snake->Grow();
@@ -293,54 +295,7 @@ bool CSnakeScene::_InitGame()
 	return true;
 }
 
-void CSnakeScene::_SetFrogCell()
-{    
-	//获得所有非蛇所在位置的空格，放入容器
-	std::vector<CCPoint> t_CellPointVec;
-	for (int i = 1; i<SnakeGolbal::g_CellsHorizon-1; ++i)
-	{
-		for (int j = 1; j<SnakeGolbal::g_CellsVertical-1; ++j)
-		{
-			if (i == m_Snake->GetHead()->GetCellX() && j == m_Snake->GetHead()->GetCellY())
-			{
-				continue;
-			}
-
-			CCArray *t_TailArr = m_Snake->GetTailArr();
-			bool t_TailFlag = false;
-			for(int it = t_TailArr->count() - 1; it >= 0; --it)
-			{
-				CSnakeBody *t_TailEnd = (CSnakeBody *)(t_TailArr->objectAtIndex(it));
-				if (t_TailEnd->GetCellX() == i && t_TailEnd->GetCellY() == j)
-				{
-					t_TailFlag = true;
-					//delete t_TailEnd;
-					break;
-				}
-				else
-				{
-					//delete t_TailEnd;
-				}
-			}
-
-			if (t_TailFlag == true)
-			{
-				continue;
-			}
-
-			t_CellPointVec.push_back(ccp(i,j));
-		}
-	}
-
-	//从容器中随机取出一个格子
-	int t_RandCell = CCRANDOM_0_1() * (t_CellPointVec.size()-1);
-	int t_RandCellX = t_CellPointVec[t_RandCell].x;
-	int t_RandCellY = t_CellPointVec[t_RandCell].y;
-
-	m_Frog->SetCell(t_RandCellX,t_RandCellY);
-}
-
-void CSnakeScene::_SetDiamondCell(DiamondI *p_Diamond)
+CCPoint CSnakeScene::_SetRandCell()
 {
 	//获得所有非蛇所在位置的空格，放入容器
 	std::vector<CCPoint> t_CellPointVec;
@@ -375,11 +330,6 @@ void CSnakeScene::_SetDiamondCell(DiamondI *p_Diamond)
 				continue;
 			}
 
-			if (i == m_Frog->GetCellX() && j == m_Frog->GetCellY())
-			{
-				continue;
-			}
-
 			t_CellPointVec.push_back(ccp(i,j));
 		}
 	}
@@ -389,7 +339,24 @@ void CSnakeScene::_SetDiamondCell(DiamondI *p_Diamond)
 	int t_RandCellX = t_CellPointVec[t_RandCell].x;
 	int t_RandCellY = t_CellPointVec[t_RandCell].y;
 
-	p_Diamond->SetCell(t_RandCellX,t_RandCellY);
+	return ccp(t_RandCellX,t_RandCellY);
+}
+
+void CSnakeScene::_SetFrogCell()
+{
+	CCPoint t_Pos = _SetRandCell();
+	m_Frog->SetCell(t_Pos.x,t_Pos.y);
+}
+
+void CSnakeScene::_SetNormalDiamondCell()
+{
+	CCPoint t_Pos = _SetRandCell();
+	m_NormalDiamond->SetCell(t_Pos.x,t_Pos.y);
+}
+void CSnakeScene::_SetSuperDiamondCell()
+{
+	CCPoint t_Pos = _SetRandCell();
+	m_SuperDiamond->SetCell(t_Pos.x,t_Pos.y);
 }
 
 //void CSnakeScene::_SetDiamondCell()
@@ -477,6 +444,12 @@ void CSnakeScene::_GameResetCallback(CCObject* pSender)
 	m_ScoreText->setString("Score: 0");
 	CCLayer *layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_UI);	
 	
+	m_EatFrogNum = 0;
+	
+	m_FoodType = Food_Frog;
+
+	m_SuperDiamondTimes = 0;
+
 	//如果游戏进行中重启
 	if (m_IsGameRunning == true)
 	{
@@ -611,10 +584,22 @@ void CSnakeScene::_GameOver()
 void CSnakeScene::_HandleEat()
 {
 	const CSnakeHead *t_SnakeHead = m_Snake->GetHead();
-	//吃青蛙
-	bool t_IsEatFrog = _HandleEatFrog(t_SnakeHead);
 
-	if (true == t_IsEatFrog)
+	bool t_IsEatFood = false;
+	switch (m_FoodType)
+	{
+	case Food_Frog:
+		t_IsEatFood = _HandleEatFrog(t_SnakeHead);
+		break;
+	case Food_Normal_Diamond:
+		t_IsEatFood = _HandleEatNormalDiamond(t_SnakeHead);
+		break;
+	case food_Super_Diamon:
+		t_IsEatFood = _HandleEatSuperDiamond(t_SnakeHead);
+		break;
+	}
+
+	if (true == t_IsEatFood)
 	{
 		//蛇长大一节
 		m_Snake->Grow();
@@ -630,18 +615,57 @@ void CSnakeScene::_HandleEat()
 			}			
 		}
 
-		//每吃到4个青蛙，钻石出现
-		if (m_EatFrogNum != 0 && m_EatFrogNum % 2 == 0)
+		CCLayer* layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_FOOD);
+		switch (m_FoodType)
 		{
-			DiamondI * t_Diamond = new CNormalDiamond(0,0);
+		case Food_Frog:			
+			//每吃到4个青蛙，钻石出现
+			if (m_EatFrogNum != 0 && m_EatFrogNum % 2 == 0)
+			{
+				int t_Rand = CCRANDOM_0_1() * 999;
+				bool t_SuperFlag = false;
+				if (m_SuperDiamondTimes == 0)
+				{
+					
+					if (t_Rand < 1000 * SnakeGolbal::FIRST_DIAMOND_RATE)
+					{
+						t_SuperFlag = true;
+					}
+				} 
+				else if (m_SuperDiamondTimes == 1)
+				{
+					if (t_Rand < 1000 * SnakeGolbal::SECOND_DIAMOND_RATE)
+					{
+						t_SuperFlag = true;
+					}
+				}
 
-			CCLayer* layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_FOOD);
-			layer->addChild(t_Diamond);
-			_SetDiamondCell(t_Diamond);
-
-			m_DiamondVec.push_back(t_Diamond);
-			t_Diamond->SetDesappear(layer,2.0);
+				if (t_SuperFlag == true)
+				{
+					layer->removeChild(m_Frog);
+					layer->addChild(m_SuperDiamond);	
+					_SetSuperDiamondCell();
+					m_FoodType = food_Super_Diamon;
+				}
+				else
+				{
+					layer->removeChild(m_Frog);
+					layer->addChild(m_NormalDiamond);	
+					_SetNormalDiamondCell();
+					m_FoodType = Food_Normal_Diamond;
+				}				
+			}	
+			break;
+		case Food_Normal_Diamond:
+		case food_Super_Diamon:
+			layer->removeChild(m_NormalDiamond);
+			layer->addChild(m_Frog);
+			_SetFrogCell();
+			m_FoodType = Food_Frog;		
+			break;
 		}
+
+
 	}
 }
 
@@ -679,6 +703,62 @@ bool CSnakeScene::_HandleEatFrog(const CSnakeHead *p_SnakeHead)
 	}
 }
 
+bool CSnakeScene::_HandleEatNormalDiamond(const CSnakeHead *p_SnakeHead)
+{
+	if(p_SnakeHead->IsInSameCell(*m_NormalDiamond))
+	{
+		m_nScore += 100;
+		char score[128] = {0};
+		sprintf(score, "Score: %d", m_nScore);
+		m_ScoreText->setString(score);
+
+		if (m_nScore > m_HighestScore)
+		{
+			m_HighestScore = m_nScore;
+			char highest_score[128] = {0};
+			sprintf(highest_score, "HighestScore: %d", m_HighestScore);
+			m_HighestScoreText->setString(highest_score);
+		}
+
+		//播放音效
+		_PlayMunchSound();
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
+
+bool CSnakeScene::_HandleEatSuperDiamond(const CSnakeHead *p_SnakeHead)
+{
+	if(p_SnakeHead->IsInSameCell(*m_SuperDiamond))
+	{
+		m_nScore += 150;
+		char score[128] = {0};
+		sprintf(score, "Score: %d", m_nScore);
+		m_ScoreText->setString(score);
+
+		if (m_nScore > m_HighestScore)
+		{
+			m_HighestScore = m_nScore;
+			char highest_score[128] = {0};
+			sprintf(highest_score, "HighestScore: %d", m_HighestScore);
+			m_HighestScoreText->setString(highest_score);
+		}
+
+		//播放音效
+		_PlayMunchSound();
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 bool CSnakeScene::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 {
