@@ -657,8 +657,13 @@ void CSnakeScene::_HandleEat()
 			}	
 			break;
 		case Food_Normal_Diamond:
-		case food_Super_Diamon:
 			layer->removeChild(m_NormalDiamond);
+			layer->addChild(m_Frog);
+			_SetFrogCell();
+			m_FoodType = Food_Frog;		
+			break;
+		case food_Super_Diamon:
+			layer->removeChild(m_SuperDiamond);
 			layer->addChild(m_Frog);
 			_SetFrogCell();
 			m_FoodType = Food_Frog;		
@@ -748,6 +753,9 @@ bool CSnakeScene::_HandleEatSuperDiamond(const CSnakeHead *p_SnakeHead)
 			sprintf(highest_score, "HighestScore: %d", m_HighestScore);
 			m_HighestScoreText->setString(highest_score);
 		}
+
+		//吃到超级钻石的次数加1
+		m_SuperDiamondTimes++;
 
 		//播放音效
 		_PlayMunchSound();
