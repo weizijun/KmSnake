@@ -14,6 +14,7 @@ namespace SnakeGolbal
 	static const char *SCORE_TTF = "Plok.ttf";
 	static const int SCORE_SIZE = 24;
 	static const int HIGHEST_SCORE_SIZE = 18;
+	static const int DIAMOND_SIZE = 24;
 
 	static const char *BEGIN_TTF = "Plok.ttf";
 	static const int BEGIN_SIZE = 30;
@@ -59,8 +60,9 @@ namespace SnakeGolbal
 	extern int g_CellsHeightEnd;
 
 	static const int DIAMOND_TIMES = 4;
-	static const int FIRST_DIAMOND_RATE = 0.4;
+	static const int FIRST_DIAMOND_RATE = 1;
 	static const int SECOND_DIAMOND_RATE = 0.1;
+	static const double SUPER_MOMENT_TIME = 10.0;
 }
 
 #endif

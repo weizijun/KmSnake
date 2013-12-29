@@ -64,7 +64,6 @@ static Direction Opposite(const Direction direction)
 	}
 }
 
-
 class CellSpriteI : public CCSprite
 {
 public:

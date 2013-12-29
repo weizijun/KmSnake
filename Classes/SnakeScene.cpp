@@ -198,17 +198,25 @@ bool CSnakeScene::_InitUILayer()
 	char t_Score[128] = {0};
 	sprintf(t_Score, "Score: %d", m_nScore);
 	m_ScoreText = CCLabelTTF::create(t_Score,SnakeGolbal::SCORE_TTF,SnakeGolbal::SCORE_SIZE);
-	m_ScoreText->setPosition(ccp(30,size.height - 30));
-	//m_ScoreText->setAnchorPoint(ccp(0,0.5));
+	m_ScoreText->setPosition(ccp(30,size.height - 70));
+	m_ScoreText->setAnchorPoint(ccp(0,0));
 	layer->addChild(m_ScoreText);
 
 	m_HighestScore = CCUserDefault::sharedUserDefault()->getIntegerForKey("highest_score");
 	char t_HighestScore[128] = {0};
 	sprintf(t_HighestScore, "HighestScore: %d", m_HighestScore);
 	m_HighestScoreText = CCLabelTTF::create(t_HighestScore,SnakeGolbal::SCORE_TTF,SnakeGolbal::HIGHEST_SCORE_SIZE);
-	m_HighestScoreText->setPosition(ccp(30,size.height - 60));
-	//m_HighestScoreText->setAnchorPoint(ccp(0,0.5));
+	m_HighestScoreText->setPosition(ccp(30,size.height - 100));
+	m_HighestScoreText->setAnchorPoint(ccp(0,0));
 	layer->addChild(m_HighestScoreText);
+	
+	m_DiamondNum = 0;
+	char t_DiamondScore[128] = {0};
+	sprintf(t_DiamondScore, "Diamond: %d", m_DiamondNum);
+	m_DimondText = CCLabelTTF::create(t_DiamondScore,SnakeGolbal::SCORE_TTF,SnakeGolbal::DIAMOND_SIZE);
+	m_DimondText->setPosition(ccp(30,size.height - 30));
+	m_DimondText->setAnchorPoint(ccp(0,0));
+	layer->addChild(m_DimondText);
 
 	m_BeginText = CCLabelTTF::create("Snake On Phone!",SnakeGolbal::BEGIN_TTF,SnakeGolbal::BEGIN_SIZE);
 	m_BeginText->setPosition(ccp(size.width/2,size.height/2));
@@ -279,6 +287,7 @@ bool CSnakeScene::_InitGame()
 	_SetFrogCell();
 	m_EatFrogNum = 0;
 	m_SuperDiamondTimes = 0;
+	m_DiamondNum = 0;
 
 	m_FoodType = 1;
 
@@ -358,6 +367,56 @@ void CSnakeScene::_SetSuperDiamondCell()
 	CCPoint t_Pos = _SetRandCell();
 	m_SuperDiamond->SetCell(t_Pos.x,t_Pos.y);
 }
+
+void CSnakeScene::_SetSuperMomentCell()
+{
+	CCLayer*layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_FOOD);
+	m_DiamondMap.clear();
+	for (int i = 0; i<SnakeGolbal::g_CellsHorizon; ++i)
+	{
+		for (int j = 0; j<SnakeGolbal::g_CellsVertical; ++j)
+		{
+			if ((i % 2 && j % 2) || (i%2==0 && j%2==0))
+			{
+				if (i == m_Snake->GetHead()->GetCellX() && j == m_Snake->GetHead()->GetCellY())
+				{
+					continue;
+				}
+
+				CCArray *t_TailArr = m_Snake->GetTailArr();
+				bool t_TailFlag = false;
+				for(int it = t_TailArr->count() - 1; it >= 0; --it)
+				{
+					CSnakeBody *t_TailEnd = (CSnakeBody *)(t_TailArr->objectAtIndex(it));
+					if (t_TailEnd->GetCellX() == i && t_TailEnd->GetCellY() == j)
+					{
+						t_TailFlag = true;
+						//delete t_TailEnd;
+						break;
+					}
+					else
+					{
+						//delete t_TailEnd;
+					}
+				}
+
+				if (t_TailFlag == true)
+				{
+					continue;
+				}
+
+				DiamondI *t_Diamond = new CNormalDiamond(i,j);
+				layer->addChild(t_Diamond);
+				stCellPoint *t_Point = new stCellPoint(i,j);				
+				m_DiamondMap.insert(std::make_pair(t_Point,t_Diamond));
+				//m_DiamondMap[t_Point] = t_Diamond;
+			}			
+		}
+	}
+
+	scheduleOnce(schedule_selector(CSnakeScene::_DiamondDisappear),SnakeGolbal::SUPER_MOMENT_TIME);
+}
+
 
 //void CSnakeScene::_SetDiamondCell()
 //{
@@ -517,13 +576,25 @@ void CSnakeScene::_GameResetCallback(CCObject* pSender)
 	//分数清零
 	m_nScore = 0;
 	m_ScoreText->setString("Score: 0");
-	CCLayer *layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_UI);	
-	
-	m_EatFrogNum = 0;
-	
-	m_FoodType = Food_Frog;
 
+	m_DiamondNum = 0;
+	m_DimondText->setString("Diamond: 0");
+
+	CCLayer *layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_UI);	
+	//隐藏菜单栏
+	layer->removeChild(m_PauseMenu);
+	layer->removeChild(m_PauseBackGround);
+	m_IsMenuShow = false;
+
+	m_EatFrogNum = 0;	
 	m_SuperDiamondTimes = 0;
+
+	layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_FOOD);	
+	layer->removeAllChildren();
+	layer->addChild(m_Frog);
+	_SetRandCell();
+	m_DiamondMap.clear();	
+	m_FoodType = Food_Frog;
 
 	//如果游戏进行中重启
 	if (m_IsGameRunning == true)
@@ -550,11 +621,6 @@ void CSnakeScene::_GameResetCallback(CCObject* pSender)
 	CCDirector::sharedDirector()->resume();
 	//CCDirector::sharedDirector()->getScheduler()->resumeTargets(m_PauseAllTargets);
 	//CC_SAFE_RELEASE_NULL(m_PauseAllTargets);
-
-	//隐藏菜单栏
-	layer->removeChild(m_PauseMenu);
-	layer->removeChild(m_PauseBackGround);
-	m_IsMenuShow = false;
 }
 
 void CSnakeScene::_GameContinueCallback(CCObject* pSender)
@@ -644,11 +710,11 @@ void CSnakeScene::_GameContinue()
 void CSnakeScene::_GameOver()
 {
 	_PlayGameOverSound();
-	CCLayer *layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_UI);
-	layer->addChild(m_GameOverText);
-	m_GameOverText->setScale(0);
-	m_GameOverText->runAction(CCScaleTo::create(1.0,1.0));
-	m_GameOverText->runAction(CCRotateBy::create(1.0,360));
+	//CCLayer *layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_UI);
+	//layer->addChild(m_GameOverText);
+	//m_GameOverText->setScale(0);
+	//m_GameOverText->runAction(CCScaleTo::create(1.0,1.0));
+	//m_GameOverText->runAction(CCRotateBy::create(1.0,360));
 
 	m_IsGameRunning = false;
 	CCUserDefault::sharedUserDefault()->setIntegerForKey("highest_score",m_HighestScore);
@@ -669,25 +735,30 @@ void CSnakeScene::_HandleEat()
 	case Food_Normal_Diamond:
 		t_IsEatFood = _HandleEatNormalDiamond(t_SnakeHead);
 		break;
-	case food_Super_Diamon:
+	case Food_Super_Diamon:
 		t_IsEatFood = _HandleEatSuperDiamond(t_SnakeHead);
 		break;
+	case  Food_Super_Moment:
+		t_IsEatFood = _HandleEatMass(t_SnakeHead);
 	}
 
 	if (true == t_IsEatFood)
 	{
-		//蛇长大一节
-		m_Snake->Grow();
-
-		int t_TailLength = m_Snake->GetTailLength();
-		if (t_TailLength % 10 == 0)
+		if (m_FoodType != Food_Super_Moment)
 		{
-			if (m_SnakeFlame > 0.2)
+			//蛇长大一节
+			m_Snake->Grow();
+
+			int t_TailLength = m_Snake->GetTailLength();
+			if (t_TailLength % 10 == 0)
 			{
-				m_SnakeFlame -= 0.1;
-				unschedule(schedule_selector(CSnakeScene::_GameCircle));
-				schedule(schedule_selector(CSnakeScene::_GameCircle),m_SnakeFlame);
-			}			
+				if (m_SnakeFlame > 0.2)
+				{
+					m_SnakeFlame -= 0.1;
+					unschedule(schedule_selector(CSnakeScene::_GameCircle));
+					schedule(schedule_selector(CSnakeScene::_GameCircle),m_SnakeFlame);
+				}			
+			}
 		}
 
 		CCLayer* layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_FOOD);
@@ -695,7 +766,7 @@ void CSnakeScene::_HandleEat()
 		{
 		case Food_Frog:			
 			//每吃到4个青蛙，钻石出现
-			if (m_EatFrogNum != 0 && m_EatFrogNum % 2 == 0)
+			if (m_EatFrogNum != 0 && m_EatFrogNum % SnakeGolbal::DIAMOND_TIMES == 0)
 			{
 				int t_Rand = CCRANDOM_0_1() * 999;
 				bool t_SuperFlag = false;
@@ -720,7 +791,7 @@ void CSnakeScene::_HandleEat()
 					layer->removeChild(m_Frog);
 					layer->addChild(m_SuperDiamond);	
 					_SetSuperDiamondCell();
-					m_FoodType = food_Super_Diamon;
+					m_FoodType = Food_Super_Diamon;
 				}
 				else
 				{
@@ -737,11 +808,19 @@ void CSnakeScene::_HandleEat()
 			_SetFrogCell();
 			m_FoodType = Food_Frog;		
 			break;
-		case food_Super_Diamon:
+		case Food_Super_Diamon:			
+			//layer->addChild(m_Frog);
+			//_SetFrogCell();
+			//m_FoodType = Food_Frog;		
 			layer->removeChild(m_SuperDiamond);
-			layer->addChild(m_Frog);
-			_SetFrogCell();
-			m_FoodType = Food_Frog;		
+			_SetSuperMomentCell();
+			m_FoodType = Food_Super_Moment;
+			break;
+		case  Food_Super_Moment :
+			if (m_DiamondMap.size() == 0)
+			{
+				//m_FoodType = Food_Frog;
+			}
 			break;
 		}
 
@@ -787,21 +866,15 @@ bool CSnakeScene::_HandleEatNormalDiamond(const CSnakeHead *p_SnakeHead)
 {
 	if(p_SnakeHead->IsInSameCell(*m_NormalDiamond))
 	{
-		m_nScore += 100;
+		m_DiamondNum++;
 		char score[128] = {0};
-		sprintf(score, "Score: %d", m_nScore);
-		m_ScoreText->setString(score);
-
-		if (m_nScore > m_HighestScore)
-		{
-			m_HighestScore = m_nScore;
-			char highest_score[128] = {0};
-			sprintf(highest_score, "HighestScore: %d", m_HighestScore);
-			m_HighestScoreText->setString(highest_score);
-		}
+		sprintf(score, "Diamond: %d", m_DiamondNum);
+		m_DimondText->setString(score);
 
 		//播放音效
 		_PlayMunchSound();
+
+
 
 		return true;
 	}
@@ -816,18 +889,10 @@ bool CSnakeScene::_HandleEatSuperDiamond(const CSnakeHead *p_SnakeHead)
 {
 	if(p_SnakeHead->IsInSameCell(*m_SuperDiamond))
 	{
-		m_nScore += 150;
+		m_DiamondNum++;
 		char score[128] = {0};
-		sprintf(score, "Score: %d", m_nScore);
-		m_ScoreText->setString(score);
-
-		if (m_nScore > m_HighestScore)
-		{
-			m_HighestScore = m_nScore;
-			char highest_score[128] = {0};
-			sprintf(highest_score, "HighestScore: %d", m_HighestScore);
-			m_HighestScoreText->setString(highest_score);
-		}
+		sprintf(score, "Diamond: %d", m_DiamondNum);
+		m_DimondText->setString(score);
 
 		//吃到超级钻石的次数加1
 		m_SuperDiamondTimes++;
@@ -841,6 +906,28 @@ bool CSnakeScene::_HandleEatSuperDiamond(const CSnakeHead *p_SnakeHead)
 	{
 		return false;
 	}
+}
+
+bool CSnakeScene::_HandleEatMass(const CSnakeHead *p_SnakeHead)
+{
+	CCLayer*layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_FOOD);
+	for (std::map<stCellPoint *,DiamondI *>::iterator it = m_DiamondMap.begin(); it != m_DiamondMap.end(); ++it)
+	{
+		if (p_SnakeHead->GetCellX() == it->first->cell_x && p_SnakeHead->GetCellY() == it->first->cell_y)
+		{
+			m_DiamondNum++;
+			char score[128] = {0};
+			sprintf(score, "Diamond: %d", m_DiamondNum);
+			m_DimondText->setString(score);
+
+			DiamondI *t_Diamond = it->second;
+			layer->removeChild(t_Diamond);
+			m_DiamondMap.erase(it);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool CSnakeScene::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
@@ -976,16 +1063,18 @@ void CSnakeScene::_PlayBackgroundSound()
 
 }
 
-bool CSnakeScene::_EraseDiamondVec(DiamondI * p_Diamond)
+void CSnakeScene::_DiamondDisappear(float tt)
 {
-	for (std::vector<DiamondI *>::iterator it = m_DiamondVec.begin(); it != m_DiamondVec.end(); ++it)
-	{
-		if ((*it)->GetCellX() == p_Diamond->GetCellX() && (*it)->GetCellY() == p_Diamond->GetCellY())
-		{
-			m_DiamondVec.erase(it);
-			return true;
-		}
-	}
+ 	CCLayer*layer = (CCLayer*)this->getChildren()->objectAtIndex(SnakeGolbal::LAYER_FOOD);
+// 	for (std::map<stCellPoint *,DiamondI *>::iterator it = m_DiamondMap.begin(); it != m_DiamondMap.end(); ++it)
+// 	{
+// 		DiamondI *t_Diamond = it->second;
+// 		layer->removeChild(t_Diamond);
+// 	}
+	layer->removeAllChildren();
 
-	return false;
+	m_DiamondMap.clear();
+	m_FoodType = Food_Frog;
+	layer->addChild(m_Frog);
+	_SetFrogCell();
 }

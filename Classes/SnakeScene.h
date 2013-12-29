@@ -7,6 +7,7 @@
 #include "Frog.h"
 #include "NormalDiamond.h"
 #include "SuperDiamond.h"
+#include <map>
 
 using namespace cocos2d;
 
@@ -14,7 +15,19 @@ enum Snake_Food
 {
 	Food_Frog = 1,
 	Food_Normal_Diamond = 2,
-	food_Super_Diamon = 3,
+	Food_Super_Diamon = 3,
+	Food_Super_Moment = 4,	
+};
+
+struct stCellPoint
+{
+	stCellPoint(int x,int y)
+	{
+		cell_x = x;
+		cell_y = y;
+	}
+	int cell_x;
+	int cell_y;
 };
 
 class CSnakeScene : public cocos2d::CCLayer
@@ -30,9 +43,7 @@ public:
 	void ccTouchMoved(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent);
 	void ccTouchEnded(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent);
 	void ccTouchCancelled(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent);
-	void registerWithTouchDispatcher();
-
-	bool _EraseDiamondVec(DiamondI * p_Diamond);
+	void registerWithTouchDispatcher();	
 private:
 	//初始化背景边框
 	bool _InitBackgroundCell();
@@ -81,6 +92,8 @@ private:
 	void _SetFrogCell();	
 	void _SetNormalDiamondCell();
 	void _SetSuperDiamondCell();
+	void _SetSuperMomentCell();
+
 
 
 	//结束游戏
@@ -97,6 +110,7 @@ private:
 	bool _HandleEatFrog(const CSnakeHead *);
 	bool _HandleEatNormalDiamond(const CSnakeHead *);
 	bool _HandleEatSuperDiamond(const CSnakeHead *);
+	bool _HandleEatMass(const CSnakeHead *p_SnakeHead);
 
 	//检查是否为双击
 	void _CheckDoubleCilck(float tt);
@@ -120,11 +134,13 @@ private:
 	int m_HighestScore;
 	int m_EatFrogNum;
 	int m_SuperDiamondTimes;
+	int m_DiamondNum;
 	bool m_IsGameRunning;
 	CCSet *m_PauseAllTargets;
 
 	CCLabelTTF* m_ScoreText;
 	CCLabelTTF* m_HighestScoreText;
+	CCLabelTTF* m_DimondText;
 	CCLabelTTF* m_GameOverText;
 	CCLabelTTF* m_BeginText;
 	bool m_IsMenuShow;
@@ -137,7 +153,7 @@ private:
 	DiamondI *m_NormalDiamond;
 	DiamondI *m_SuperDiamond;
 	int m_FoodType;
-	std::vector<DiamondI *> m_DiamondVec;
+	std::map<stCellPoint *,DiamondI *> m_DiamondMap;
 };
 
 #endif
